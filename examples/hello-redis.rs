@@ -13,7 +13,7 @@ enum Command {
         key: String,
         val: Vec<u8>,
         resp: Responder<()>,
-    }
+    },
 }
 
 type Responder<T> = oneshot::Sender<mini_redis::Result<T>>;
@@ -35,7 +35,7 @@ pub async fn main() {
                     // Ignore errors
                     let _ = resp.send(res);
                 }
-                Command::Set { key, val,  resp } => {
+                Command::Set { key, val, resp } => {
                     let res = client.set(&key, val.into()).await;
 
                     // Ignore errors
@@ -53,7 +53,7 @@ pub async fn main() {
         };
 
         if tx.send(cmd).await.is_err() {
-           eprintln!("connection task shutdown");
+            eprintln!("connection task shutdown");
             return;
         }
 

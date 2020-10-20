@@ -1,8 +1,8 @@
+use bytes::Bytes;
+use mini_redis::Frame;
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
-use bytes::Bytes;
 use tokio::net::{TcpListener, TcpStream};
-use mini_redis::Frame;
 
 mod connection;
 use connection::Connection;
@@ -25,7 +25,7 @@ async fn main() {
         println!("Accepted from {:?}", addr);
 
         tokio::spawn(async move {
-            process(socket,db).await;
+            process(socket, db).await;
         });
     }
 }
@@ -57,4 +57,3 @@ async fn process(socket: TcpStream, db: Db) {
         connection.write_frame(&response).await.unwrap();
     }
 }
-

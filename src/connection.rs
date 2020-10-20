@@ -1,10 +1,10 @@
 use std::io::{self, Cursor};
 
-use bytes::{Buf,BytesMut};
-use tokio::net::TcpStream;
-use tokio::io::{AsyncReadExt, AsyncWriteExt, BufWriter};
-use mini_redis::{Frame, Result};
+use bytes::{Buf, BytesMut};
 use mini_redis::frame::Error::Incomplete;
+use mini_redis::{Frame, Result};
+use tokio::io::{AsyncReadExt, AsyncWriteExt, BufWriter};
+use tokio::net::TcpStream;
 
 pub struct Connection {
     stream: BufWriter<TcpStream>,
@@ -21,26 +21,26 @@ impl Connection {
     }
 
     pub async fn read_frame(&mut self) -> Result<Option<Frame>> {
-       loop {
-           // Attempt to parse a frame from the buffered data.
-           // If enough data has been buffered, the frame is returned.
-           if let Some(frame) = self.parse_frame()? {
-               return Ok(Some(frame));
-           }
-
-           // There is not enough buffered data to read a frame.
-           // Attempt to read more data from the socket.
-           //
-           // On success, the number of bytes is returned.
-           // 0 indicates "end of stream".
-            if 0 == self.stream.read_buf(&mut self.buffer).await? {
-               if self.buffer.is_empty() {
-                   return Ok(None);
-               } else {
-                   return Err("connection reset by peer".into());
-               }
+        loop {
+            // Attempt to parse a frame from the buffered data.
+            // If enough data has been buffered, the frame is returned.
+            if let Some(frame) = self.parse_frame()? {
+                return Ok(Some(frame));
             }
-       }
+
+            // There is not enough buffered data to read a frame.
+            // Attempt to read more data from the socket.
+            //
+            // On success, the number of bytes is returned.
+            // 0 indicates "end of stream".
+            if 0 == self.stream.read_buf(&mut self.buffer).await? {
+                if self.buffer.is_empty() {
+                    return Ok(None);
+                } else {
+                    return Err("connection reset by peer".into());
+                }
+            }
+        }
     }
 
     fn parse_frame(&mut self) -> Result<Option<Frame>> {
@@ -50,7 +50,7 @@ impl Connection {
         match Frame::check(&mut buf) {
             Ok(_) => {
                 // Frame::check set cursor position at end of frame.
-               let len = buf.position() as usize;
+                let len = buf.position() as usize;
 
                 // Reset the internal cursor for the call to parse.
                 buf.set_position(0);
@@ -86,7 +86,7 @@ impl Connection {
                     self.write_value(entry).await?;
                 }
             }
-            _ => self.write_value(frame).await?
+            _ => self.write_value(frame).await?,
         }
 
         // Ensure the encoded frame is written to the socket.

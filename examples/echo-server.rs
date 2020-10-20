@@ -7,7 +7,7 @@ async fn main() -> io::Result<()> {
     let mut listener = TcpListener::bind("127.0.0.1:6142").await.unwrap();
 
     loop {
-        let (socket, _ ) = listener.accept().await?;
+        let (socket, _) = listener.accept().await?;
 
         // echo_io_copy(socket).await;
         echo_manual_copy(socket).await;
@@ -45,5 +45,4 @@ async fn echo_io_copy(mut socket: tokio::net::TcpStream) {
             eprintln!("failed to copy");
         }
     });
-
 }
