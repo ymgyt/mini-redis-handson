@@ -22,7 +22,7 @@ async fn main() -> io::Result<()> {
             break;
         }
 
-        println!("GOT {:?}", &buf[..n]);
+        println!("GOT {:?}", String::from_utf8_lossy(&buf[..n]));
     }
 
     Ok(())
